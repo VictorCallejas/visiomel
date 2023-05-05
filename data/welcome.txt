@@ -1,0 +1,87 @@
+HOW TO DOWNLOAD THE VISIOMEL CHALLENGE: PREDICTING MELANOMA RELAPSE DATA
+
+-------------------------------------------------------
+
+Welcome to the VisioMel Challenge: Predicting Melanoma Relapse. These instructions will help you access the Whole Slide Images in the training set for this competition. Since this a code execution challenge, the test set images and metadata are only accessible in the runtime container. For more information about the test set, see the Problem Description and Code Submission Format pages.
+
+All images are in the form of pyramidal tifs. For more information on how to work with Whole Slide Images and pyramidal tifs, see the Data Resources page.
+
+The folder with the training set images for the competition is hosted on a public AWS S3 bucket. The following directory structure is used:
+
+|--- images
+|    |--- 1u4lhlqb.tif
+|    |--- rqumqnfp.tif
+|    |--- <...>
+
+Note that the images/ directory is 1.5TB in size.
+
+The images are named according to the convention `{id}.tif`, where the {id} is the unique identifier for the slide listed in the `train_metadata.csv` file found on the Data Download page.
+
+The training set images can be downloaded from the following link:
+
+    s3://drivendata-competition-visiomel-public-us/images/
+
+## Regional buckets
+
+The bucket listed above is in the US East AWS Region. The same data is also hosted on AWS buckets in the EU (Frankfurt) and Asia (Singapore). To get the fastest download times, download from the bucket closest to you.
+
+To access buckets other than the default US East bucket, simply replace the "-us" with "-as" or "-eu" at the end of the bucket name. For example, rather than "s3://drivendata-competition-visiomel-public-us/images/", use one of the following:
+
+    s3://drivendata-competition-visiomel-public-eu/images/
+    s3://drivendata-competition-visiomel-public-as/images/
+
+
+## AWS CLI
+
+The easiest way to download data from AWS is using the AWS CLI:
+
+    https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html
+
+To download an individual data file to your local machine, the general structure is
+
+    aws s3 cp <S3 URI> <local path> --no-sign-request
+
+For example:
+
+    aws s3 cp s3://drivendata-competition-visiomel-public-us/images/1u4lhlqb.tif ./ --no-sign-request
+
+The above downloads the file `1u4lhlqb.tif` from the public bucket in the US region. Adding "--no-sign-request" allows data to be downloaded without configuring an AWS profile.
+
+To download a directory rather than a file, use the `--recursive` flag. For example, to download all of the training set images:
+
+    aws s3 cp s3://drivendata-competition-visiomel-public-us/images/ images/ --no-sign-request --recursive
+
+See the AWS CLI docs for more details on how to use filters and other flags to download subsets of the data:
+
+    https://docs.aws.amazon.com/cli/latest/reference/s3/#use-of-exclude-and-include-filters
+
+
+## Metadata
+
+We have also provided a "train_metadata.csv" file on the Data Download page that contains clinical variables and metadata for the training set images. This metadata file includes file hashes that can be used to verify the integrity of a downloaded file. Hashes are generated using the default cksum hash function.
+
+The training metadata csv contains the following columns:
+
+* `filename` (str) - unique identifier for each WSI
+* `age` (str) - age range of the patient at initial diagnosis
+* `sex` (int) - sex of the patient at initial diagnosis, where 1=male and 2=female
+* `body_site` (str) - the site of the melanoma at initial diagnosis
+* `melanoma_history` (str) - whether the patient had melanoma before
+* `breslow` (str) - thickness of the melanoma in mm at initial diagnosis
+* `ulceration` (str) - whether the melanoma had ulceration, which is a total loss of epidermal tissue
+* `tif_cksum` (str) - the result of running the unix cksum command on the TIF image
+* `tif_size` (int) - the file size in bytes of the TIF image
+* `us_tif_url` (str) - file location of the pyramidal TIF in the public s3 bucket in the US East region
+* `eu_tif_url` (str) - file location of the pyramidal TIF in the public s3 bucket in the EU region
+* `asia_tif_url` (str) - file location of the pyramidal TIF in the public s3 bucket in the Asia Pacific region
+
+To check that your data was not corrupted during download, you can generate your own hashes at the command line and compare them to the metadata. For example, we know from the metadata that the hash for the file "1u4lhlqb.tif" is 3028450373 and the byte count is 747151312. To generate a checksum value for a locally saved version:
+
+	$ cksum images/1u4lhlqb.tif
+	3028450373 747151312 images/1u4lhlqb.tif
+
+##
+
+Good luck! If you have any questions you can always visit the user forum at:
+
+	https://community.drivendata.org/
